@@ -1,8 +1,11 @@
 package io.codekaffee.quarkussocial;
 
 import io.codekaffee.quarkussocial.dto.CreateUserRequest;
+import io.codekaffee.quarkussocial.models.User;
+import io.codekaffee.quarkussocial.repositories.UserRepository;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -15,6 +18,9 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
+    @Inject
+    private UserRepository userRepository;
+
     @POST
     public Response createUser(CreateUserRequest createUserRequest){
         System.out.println(createUserRequest);
@@ -24,12 +30,7 @@ public class UserResource {
 
     @GET
     public Response listAllUsers(){
-        List<CreateUserRequest> users = Arrays.asList(
-                new CreateUserRequest("Israel", 22),
-                new CreateUserRequest("Alexsander Vader", 22),
-                new CreateUserRequest("Ciro V.", 24)
-        );
-
+        List<User> users = userRepository.findAll().list();
         return Response.ok(users).build();
     }
 }
