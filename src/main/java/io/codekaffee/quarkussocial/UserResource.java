@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 
 @Path("/users")
@@ -19,8 +20,13 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    @Inject
+
     private UserRepository userRepository;
+
+    @Inject
+    public UserResource(UserRepository  userRepository){
+        this.userRepository = userRepository;
+    }
 
     @POST
     @Transactional
@@ -47,6 +53,26 @@ public class UserResource {
         return Response.ok(optUser.get()).build();
     }
 
+    @PUT
+    @Path("{id}")
+    @Transactional
+    public Response updateUser(@PathParam("id") Long id, CreateUserRequest createUserRequest){
+        Optional<User> userOpt =  userRepository.findByIdOptional(id);
+
+        if(userOpt.isEmpty()){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        User user = userOpt.get();
+        user.setName(createUserRequest.getName());
+        user.setAge(createUserRequest.getAge());
+
+        userRepository.persist(user);
+
+        return Response.noContent().build();
+
+    }
+
 
     @DELETE
     @Path("{id}")
@@ -58,7 +84,7 @@ public class UserResource {
             return Response.noContent().build();
         }
 
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        return Response.status(Response.Status.NOT_FOUND).build();
     }
 
 
