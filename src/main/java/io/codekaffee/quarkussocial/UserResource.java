@@ -6,6 +6,7 @@ import io.codekaffee.quarkussocial.repositories.UserRepository;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.ws.rs.*;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Path("/users")
@@ -32,7 +34,7 @@ public class UserResource {
 
     @POST
     @Transactional
-    public Response createUser(@Valid CreateUserRequest createUserRequest){
+    public Response createUser(CreateUserRequest createUserRequest){
 
         var validations = validator.validate(createUserRequest);
 
@@ -46,9 +48,10 @@ public class UserResource {
         }
 
 
+        var violations = validations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
 
-        return Response.status(Response.Status.BAD_REQUEST).entity(validations).build();
 
+        return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
     }
 
 
@@ -90,7 +93,10 @@ public class UserResource {
         }
 
 
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        var violations = validations.stream().map(ConstraintViolation::getMessage);
+
+
+        return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
 
 
     }
