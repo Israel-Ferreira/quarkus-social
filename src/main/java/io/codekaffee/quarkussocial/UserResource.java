@@ -4,13 +4,13 @@ import io.codekaffee.quarkussocial.dto.CreateUserRequest;
 import io.codekaffee.quarkussocial.models.User;
 import io.codekaffee.quarkussocial.repositories.UserRepository;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+import javax.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,21 +21,34 @@ import java.util.Optional;
 public class UserResource {
 
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final Validator validator;
 
     @Inject
-    public UserResource(UserRepository  userRepository){
+    public UserResource(UserRepository  userRepository, Validator validator){
         this.userRepository = userRepository;
+        this.validator = validator;
     }
 
     @POST
     @Transactional
-    public Response createUser(CreateUserRequest createUserRequest){
-        User user = new User(createUserRequest);
+    public Response createUser(@Valid CreateUserRequest createUserRequest){
 
-        userRepository.persist(user);
+        var validations = validator.validate(createUserRequest);
 
-        return Response.ok(createUserRequest).build();
+        if(validations.isEmpty()){
+
+            User user = new User(createUserRequest);
+
+            userRepository.persist(user);
+
+            return Response.ok(user).build();
+        }
+
+
+
+        return Response.status(Response.Status.BAD_REQUEST).entity(validations).build();
+
     }
 
 
@@ -63,13 +76,22 @@ public class UserResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        User user = userOpt.get();
-        user.setName(createUserRequest.getName());
-        user.setAge(createUserRequest.getAge());
+        var validations = validator.validate(userOpt.get());
 
-        userRepository.persist(user);
+        if(validations.isEmpty()) {
 
-        return Response.noContent().build();
+            User user = userOpt.get();
+            user.setName(createUserRequest.getName());
+            user.setAge(createUserRequest.getAge());
+
+            userRepository.persist(user);
+
+            return Response.noContent().build();
+        }
+
+
+        return Response.status(Response.Status.BAD_REQUEST).build();
+
 
     }
 
