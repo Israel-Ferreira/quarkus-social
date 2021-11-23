@@ -1,5 +1,6 @@
 package io.codekaffee.quarkussocial.models;
 
+import io.codekaffee.quarkussocial.dto.CreateUserRequest;
 import io.smallrye.common.constraint.NotNull;
 
 import javax.persistence.*;
@@ -19,6 +20,13 @@ public class User {
 
     @NotNull
     private Integer age;
+
+    public User(){}
+
+    public User(CreateUserRequest createUserRequest){
+        this.name = createUserRequest.getName();
+        this.age = createUserRequest.getAge();
+    }
 
     public Long getId() {
         return id;
