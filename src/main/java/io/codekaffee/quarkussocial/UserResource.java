@@ -1,6 +1,7 @@
 package io.codekaffee.quarkussocial;
 
 import io.codekaffee.quarkussocial.dto.CreateUserRequest;
+import io.codekaffee.quarkussocial.dto.ResponseError;
 import io.codekaffee.quarkussocial.models.User;
 import io.codekaffee.quarkussocial.repositories.UserRepository;
 
@@ -48,7 +49,7 @@ public class UserResource {
         }
 
 
-        var violations = validations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
+        var violations = ResponseError.createFromValidation(validations);
 
 
         return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();

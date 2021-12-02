@@ -4,7 +4,6 @@ import io.codekaffee.quarkussocial.dto.CreateUserRequest;
 import io.smallrye.common.constraint.NotNull;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
