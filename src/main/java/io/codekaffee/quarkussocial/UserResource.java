@@ -7,15 +7,12 @@ import io.codekaffee.quarkussocial.repositories.UserRepository;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.validation.ConstraintViolation;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Path("/users")
@@ -23,6 +20,7 @@ import java.util.stream.Collectors;
 @Produces(MediaType.APPLICATION_JSON)
 public class UserResource {
 
+    public static final int UNPROCESSABLE_ENTITY_STATUS = 422;
 
     private final UserRepository userRepository;
     private final Validator validator;
@@ -45,14 +43,12 @@ public class UserResource {
 
             userRepository.persist(user);
 
-            return Response.ok(user).build();
+            return Response.status(Response.Status.CREATED).entity(user).build();
         }
 
 
-        var violations = ResponseError.createFromValidation(validations);
-
-
-        return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
+        return  ResponseError.createFromValidation(validations)
+                .withStatusCode(UNPROCESSABLE_ENTITY_STATUS);
     }
 
 
@@ -94,12 +90,10 @@ public class UserResource {
         }
 
 
-        var violations = validations.stream().map(ConstraintViolation::getMessage);
 
 
-        return Response.status(Response.Status.BAD_REQUEST).entity(violations).build();
-
-
+        return ResponseError.createFromValidation(validations)
+                .withStatusCode(UNPROCESSABLE_ENTITY_STATUS);
     }
 
 

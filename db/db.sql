@@ -6,5 +6,10 @@ CREATE TABLE USERS (
 	AGE INTEGER NOT NULL
 );
 
-
+CREATE TABLE POSTS (
+id BIGSERIAL NOT NULL PRIMARY KEY,
+post_content TEXT NOT NULL,
+dateTime timestamp not null,
+user_id bigint NOT NULL REFERENCES USERS(id)
+);
 

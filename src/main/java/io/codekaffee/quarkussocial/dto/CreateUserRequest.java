@@ -1,11 +1,17 @@
 package io.codekaffee.quarkussocial.dto;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
+
+@Getter
+@Setter
 public class CreateUserRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -29,29 +35,4 @@ public class CreateUserRequest implements Serializable {
     }
 
 
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    @Override
-    public String toString() {
-        return "CreateUserRequest{" +
-                "name='" + name + '\'' +
-                ", age=" + age +
-                '}';
-    }
 }

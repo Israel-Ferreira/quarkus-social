@@ -1,11 +1,19 @@
 package io.codekaffee.quarkussocial.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.codekaffee.quarkussocial.dto.CreateUserRequest;
 import io.smallrye.common.constraint.NotNull;
+import lombok.*;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "users")
 public class User {
@@ -20,6 +28,11 @@ public class User {
     @NotNull
     private Integer age;
 
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private List<Post> posts = new ArrayList<>();
+
     public User(){}
 
     public User(CreateUserRequest createUserRequest){
@@ -27,40 +40,16 @@ public class User {
         this.age = createUserRequest.getAge();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(name, user.name) && Objects.equals(age, user.age);
+        return id != null && Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, age);
+        return getClass().hashCode();
     }
 }
