@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Getter
-@Setter
-@ToString
+
 @Entity
+@Getter @Setter
 @Table(name = "users")
 public class User {
 
@@ -28,10 +27,6 @@ public class User {
     @NotNull
     private Integer age;
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private List<Post> posts = new ArrayList<>();
 
     public User(){}
 
@@ -39,6 +34,7 @@ public class User {
         this.name = createUserRequest.getName();
         this.age = createUserRequest.getAge();
     }
+
 
     @Override
     public boolean equals(Object o) {

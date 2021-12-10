@@ -63,8 +63,8 @@ public class PostResource {
     @APIResponseSchema(Object.class)
     @Operation(summary = "Listar posts de um usuário especifico")
     public Response listPosts(@PathParam("userId") Long userId){
-        List<Post> posts = new ArrayList<>();
-        return Response.ok().build();
+        List<Post> posts = this.postService.listAllUserPosts(userId);
+        return Response.ok(posts).build();
     }
 
 }

@@ -6,6 +6,7 @@ import io.codekaffee.quarkussocial.models.Post;
 import io.codekaffee.quarkussocial.models.User;
 import io.codekaffee.quarkussocial.repositories.PostRepository;
 import io.codekaffee.quarkussocial.repositories.UserRepository;
+import io.quarkus.panache.common.Sort;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -36,7 +37,8 @@ public class PostService {
             throw new UserNotFoundException();
         }
 
-        return  null;
+        return postRepository.find("user", Sort.by("dateTime", Sort.Direction.Descending), userOpt.get())
+                .list();
     }
 
 
@@ -54,6 +56,7 @@ public class PostService {
         Post post = new Post(postRequest, user);
 
         postRepository.persist(post);
+
 
         return post;
     }
