@@ -13,3 +13,8 @@ dateTime timestamp not null,
 user_id bigint NOT NULL REFERENCES USERS(id)
 );
 
+CREATE TABLE followers (
+id BIGSERIAL NOT NULL PRIMARY KEY,
+user_id BIGINT not null,
+follower_id BIGINT not null
+)
