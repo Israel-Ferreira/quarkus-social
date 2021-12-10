@@ -35,7 +35,11 @@ public class Post {
     public Post(PostRequest postRequest, User user){
         this.postContent = postRequest.getContent();
         this.user = user;
-        this.dateTime = LocalDateTime.now();
+    }
+
+    @PrePersist
+    public void persistDate(){
+        this.setDateTime(LocalDateTime.now());
     }
 
     @Override
