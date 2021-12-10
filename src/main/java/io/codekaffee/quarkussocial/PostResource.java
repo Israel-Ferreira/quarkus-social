@@ -1,6 +1,7 @@
 package io.codekaffee.quarkussocial;
 
 import io.codekaffee.quarkussocial.dto.PostRequest;
+import io.codekaffee.quarkussocial.dto.PostResponse;
 import io.codekaffee.quarkussocial.dto.ResponseError;
 import io.codekaffee.quarkussocial.exceptions.UserNotFoundException;
 import io.codekaffee.quarkussocial.models.Post;
@@ -14,8 +15,8 @@ import javax.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Path("/users/{userId}/posts")
@@ -63,7 +64,11 @@ public class PostResource {
     @APIResponseSchema(Object.class)
     @Operation(summary = "Listar posts de um usuário especifico")
     public Response listPosts(@PathParam("userId") Long userId){
-        List<Post> posts = this.postService.listAllUserPosts(userId);
+        List<PostResponse> posts = this.postService.listAllUserPosts(userId).stream()
+                .map(PostResponse::fromEntity)
+                .collect(Collectors.toList());
+
+
         return Response.ok(posts).build();
     }
 
