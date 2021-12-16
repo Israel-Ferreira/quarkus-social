@@ -10,6 +10,7 @@ import io.codekaffee.quarkussocial.repositories.UserRepository;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -22,6 +23,11 @@ public class FollowerService {
     public FollowerService(FollowerRepository followerRepository, UserRepository userRepository) {
         this.followerRepository = followerRepository;
         this.userRepository = userRepository;
+    }
+
+    public List<Follower> getUserFollowers(Long userId){
+        User user = this.searchUser(userId);
+        return followerRepository.find("user", user).list();
     }
 
     private User searchUser(Long userId) {

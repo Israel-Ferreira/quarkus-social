@@ -23,6 +23,12 @@ public class FollowerResource {
         this.followerService = followerService;
     }
 
+    @GET
+    public Response getFollowers(@PathParam("userId") Long  userId){
+        var followers = followerService.getUserFollowers(userId);
+        return Response.ok().entity(followers).build();
+    }
+
     @PUT
     public Response followUser(@PathParam("userId") Long userId, FollowerDTO followerDTO){
         try {
