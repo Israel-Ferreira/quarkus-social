@@ -41,7 +41,19 @@ public class FollowerService {
         try {
             User user = searchUser(userId);
 
-            return null;
+            User followerUser = searchUser(followerDTO.getFollowerId());
+
+            if(followerRepository.follows(user, followerUser)) {
+                throw new RuntimeException();
+            }
+
+            Follower follower = new Follower();
+            follower.setUser(user);
+            follower.setFollower(followerUser);
+
+            followerRepository.persist(follower);
+
+            return follower;
         }catch (UserNotFoundException userNotFoundException){
             throw new UserNotFoundException(userNotFoundException);
         }catch (Exception e){
