@@ -1,15 +1,20 @@
 package io.codekaffee.quarkussocial;
 
 import io.codekaffee.quarkussocial.dto.FollowerDTO;
+import io.codekaffee.quarkussocial.dto.FollowerResponse;
+import io.codekaffee.quarkussocial.dto.ResponseError;
+import io.codekaffee.quarkussocial.dto.UserFollowersDTO;
+import io.codekaffee.quarkussocial.exceptions.FollowerIdIsEqualToUserException;
 import io.codekaffee.quarkussocial.exceptions.UserNotFoundException;
 import io.codekaffee.quarkussocial.models.Follower;
-import io.codekaffee.quarkussocial.repositories.FollowerRepository;
 import io.codekaffee.quarkussocial.services.FollowerService;
 
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @Path("/users/{userId}/followers")
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,8 +30,15 @@ public class FollowerResource {
 
     @GET
     public Response getFollowers(@PathParam("userId") Long  userId){
-        var followers = followerService.getUserFollowers(userId);
-        return Response.ok().entity(followers).build();
+        var followers = followerService.getUserFollowers(userId)
+                .stream().map(FollowerResponse::new)
+                .collect(Collectors.toList());
+
+        UserFollowersDTO ufsd = new UserFollowersDTO();
+        ufsd.setFollowerCount((long) followers.size());
+        ufsd.setFollowers(followers);
+
+        return Response.ok().entity(ufsd).build();
     }
 
     @PUT
@@ -34,8 +46,11 @@ public class FollowerResource {
         try {
             Follower follower = followerService.followUser(followerDTO, userId);
             return Response.noContent().build();
-        }catch (UserNotFoundException e){
+        }catch (UserNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        }catch (FollowerIdIsEqualToUserException exception){
+            ResponseError rer = new ResponseError(exception.getMessage(), new ArrayList<>());
+            return Response.status(Response.Status.CONFLICT).entity(rer).build();
         }catch (Exception e){
             return Response.status(Response.Status.BAD_REQUEST).build();
         }

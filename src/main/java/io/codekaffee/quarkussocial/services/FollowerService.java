@@ -1,6 +1,7 @@
 package io.codekaffee.quarkussocial.services;
 
 import io.codekaffee.quarkussocial.dto.FollowerDTO;
+import io.codekaffee.quarkussocial.exceptions.FollowerIdIsEqualToUserException;
 import io.codekaffee.quarkussocial.exceptions.UserNotFoundException;
 import io.codekaffee.quarkussocial.models.Follower;
 import io.codekaffee.quarkussocial.models.User;
@@ -45,9 +46,17 @@ public class FollowerService {
     public Follower followUser(FollowerDTO followerDTO, Long userId){
 
         try {
+            if(followerDTO.getFollowerId().equals(userId)){
+                throw new FollowerIdIsEqualToUserException();
+            }
+
+
             User user = searchUser(userId);
 
+
             User followerUser = searchUser(followerDTO.getFollowerId());
+
+
 
             if(followerRepository.follows(user, followerUser)) {
                 throw new RuntimeException();
@@ -60,8 +69,10 @@ public class FollowerService {
             followerRepository.persist(follower);
 
             return follower;
-        }catch (UserNotFoundException userNotFoundException){
+        }catch (UserNotFoundException userNotFoundException) {
             throw new UserNotFoundException(userNotFoundException);
+        }catch (FollowerIdIsEqualToUserException e){
+            throw new FollowerIdIsEqualToUserException();
         }catch (Exception e){
             throw new RuntimeException();
         }
