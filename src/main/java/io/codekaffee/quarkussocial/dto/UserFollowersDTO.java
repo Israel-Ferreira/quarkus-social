@@ -1,6 +1,5 @@
 package io.codekaffee.quarkussocial.dto;
 
-import io.codekaffee.quarkussocial.models.Follower;
 import lombok.Data;
 
 import java.util.ArrayList;

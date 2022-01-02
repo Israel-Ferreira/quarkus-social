@@ -49,7 +49,7 @@ public class PostResource {
 
         try {
             Post post = postService.savePost(userId, postRequest);
-            return Response.status(Response.Status.CREATED).build();
+            return Response.status(Response.Status.CREATED).entity(post).build();
         }catch (UserNotFoundException userNotFoundException){
             return Response.status(Response.Status.NOT_FOUND).build();
         } catch (RuntimeException exception){

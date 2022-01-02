@@ -10,6 +10,6 @@ public class FollowerResponse {
 
     public FollowerResponse(Follower follower){
         this.id = follower.getId();
-        this.name = follower.getUser().getName();
+        this.name = follower.getFollower().getName();
     }
 }

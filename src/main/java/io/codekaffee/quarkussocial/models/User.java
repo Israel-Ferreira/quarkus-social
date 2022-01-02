@@ -1,14 +1,11 @@
 package io.codekaffee.quarkussocial.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.codekaffee.quarkussocial.dto.CreateUserRequest;
 import io.smallrye.common.constraint.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 

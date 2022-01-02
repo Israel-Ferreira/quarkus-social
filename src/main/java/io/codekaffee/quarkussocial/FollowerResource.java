@@ -6,7 +6,6 @@ import io.codekaffee.quarkussocial.dto.ResponseError;
 import io.codekaffee.quarkussocial.dto.UserFollowersDTO;
 import io.codekaffee.quarkussocial.exceptions.FollowerIdIsEqualToUserException;
 import io.codekaffee.quarkussocial.exceptions.UserNotFoundException;
-import io.codekaffee.quarkussocial.models.Follower;
 import io.codekaffee.quarkussocial.services.FollowerService;
 
 import javax.inject.Inject;
@@ -44,7 +43,7 @@ public class FollowerResource {
     @PUT
     public Response followUser(@PathParam("userId") Long userId, FollowerDTO followerDTO){
         try {
-            Follower follower = followerService.followUser(followerDTO, userId);
+            followerService.followUser(followerDTO, userId);
             return Response.noContent().build();
         }catch (UserNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
