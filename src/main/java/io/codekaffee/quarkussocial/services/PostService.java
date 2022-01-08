@@ -11,8 +11,6 @@ import io.quarkus.panache.common.Sort;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.validation.Validator;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -21,13 +19,11 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final Validator validator;
 
     @Inject
-    public PostService(PostRepository postRepository, UserRepository userRepository, Validator validator) {
+    public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
-        this.validator = validator;
     }
 
     public List<Post> listAllUserPosts(Long userId){

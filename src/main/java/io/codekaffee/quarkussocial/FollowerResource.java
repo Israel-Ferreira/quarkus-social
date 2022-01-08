@@ -12,6 +12,8 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -56,7 +58,22 @@ public class FollowerResource {
     }
 
     @DELETE
-    public Response unfollowUser(@PathParam("userId") Long userId){
-        return Response.ok().build();
+    public Response unfollowUser(@PathParam("userId") Long userId, @QueryParam("followerId") Long followerId){
+
+        if(userId == followerId) {
+            return Response.status(Status.CONFLICT).build();
+        }
+
+
+        try {
+            this.followerService.unfollowUser(userId, followerId);
+            return Response.status(Status.NO_CONTENT).build();
+        }catch(UserNotFoundException e){
+            return Response.status(Status.NOT_FOUND).build();
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+            return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+        }
+
     }
 }

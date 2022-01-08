@@ -2,6 +2,7 @@ package io.codekaffee.quarkussocial.services;
 
 import io.codekaffee.quarkussocial.dto.FollowerDTO;
 import io.codekaffee.quarkussocial.exceptions.FollowerIdIsEqualToUserException;
+import io.codekaffee.quarkussocial.exceptions.UserConflictException;
 import io.codekaffee.quarkussocial.exceptions.UserNotFoundException;
 import io.codekaffee.quarkussocial.models.Follower;
 import io.codekaffee.quarkussocial.models.User;
@@ -39,6 +40,33 @@ public class FollowerService {
         }
 
         return  optionalUser.get();
+    }
+
+
+    @Transactional
+    public void unfollowUser(Long userId, Long followerId) {
+        Optional<User> user = userRepository.findByIdOptional(userId);
+
+        if(user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+
+        Optional<User> follower = userRepository.findByIdOptional(followerId);
+
+        if(follower.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        var follows = followerRepository.follows(user.get(), follower.get());
+
+        if(!follows){
+            throw new UserConflictException();
+        }
+
+
+        this.followerRepository.deleteByUserAndFollower(user.get().getId(), follower.get().getId());
+
     }
 
 
