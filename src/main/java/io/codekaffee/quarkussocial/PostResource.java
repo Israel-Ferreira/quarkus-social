@@ -95,7 +95,7 @@ public class PostResource {
             ),
 
             @APIResponse(
-                responseCode = "401",
+                responseCode = "403",
                 description = "Seguidor não autorizado a ver posts deste usuario",
                 content = @Content(
                     schema = @Schema(implementation = RespError.class)
@@ -108,14 +108,15 @@ public class PostResource {
 
 
         try {
+            
             List<PostResponse> posts = this.postService.listAllUserPosts(userId, followerId).stream()
             .map(PostResponse::fromEntity)
             .collect(Collectors.toList());
 
             return Response.ok(posts).build();
         } catch (UnauthorizedUserException uex) {
-            RespError respError = new RespError(uex.getLocalizedMessage(), Status.UNAUTHORIZED.getStatusCode());
-            return Response.status(Status.UNAUTHORIZED).entity(respError).build();
+            RespError respError = new RespError(uex.getLocalizedMessage(), Status.FORBIDDEN.getStatusCode());
+            return Response.status(Status.FORBIDDEN).entity(respError).build();
         } catch(UserNotFoundException exception) {
             RespError respError = new RespError(exception.getLocalizedMessage(), Status.NOT_FOUND.getStatusCode());
             return Response.status(Status.NOT_FOUND).entity(respError).build();

@@ -31,6 +31,12 @@ public class PostService {
     }
 
     public List<Post> listAllUserPosts(Long userId, Long followerId){
+
+        if(followerId == null){
+            throw new UnauthorizedUserException("FollowerId nulo");
+        }
+
+
         Optional<User> userOpt = userRepository.findByIdOptional(userId);
 
         if(userOpt.isEmpty()){
