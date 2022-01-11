@@ -12,12 +12,15 @@ import io.codekaffee.quarkussocial.dto.CreateUserRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
+import java.util.List;
+import java.util.Map;
+
 @QuarkusTest
-public class UserResourceTest {
+class UserResourceTest {
 
     @Test
     @DisplayName("Deve criar um usuário com sucesso")
-    public void shouldCreateUserWhenIsBodyValid() {
+    void shouldCreateUserWhenIsBodyValid() {
         var user = new CreateUserRequest("Matheus Faria", 24);
 
         var response = given()
@@ -30,5 +33,65 @@ public class UserResourceTest {
         Assertions.assertEquals(Status.CREATED.getStatusCode(), response.getStatusCode());
         Assertions.assertNotNull(response.jsonPath().getString("id"));
 
+    }
+
+
+
+
+
+
+    @Test
+    @DisplayName("Não deve criar o usuário, se o nome do usuário estiver em branco")
+    void shouldntCreateUserWhenNameIsBlank() {
+        var user = new CreateUserRequest("", 24);
+
+        var response = given()
+                .contentType(ContentType.JSON)
+                .body(user)
+                .when().post("/users")
+                .then().extract().response();
+
+
+        Assertions.assertEquals(422, response.getStatusCode());
+
+    }
+
+
+    @Test
+    @DisplayName("Não deve criar um usuário, se o nome do usuário estiver nulo")
+    void shouldNotCreateUserWithNullValue() {
+        var user =  new CreateUserRequest(null, 24);
+
+        var response = given()
+                .contentType(ContentType.JSON)
+                .body(user)
+                .when().post("/users")
+                .then().extract().response();
+
+
+        Assertions.assertEquals(422, response.getStatusCode());
+    }
+
+
+    @Test
+    @DisplayName("Não deve criar o usuário, se campos do json nõa forem válidos")
+    void shouldntCreateUserWithInvalidJson(){
+        var user =  new CreateUserRequest(null, null);
+
+        var response = given().when()
+                .contentType(ContentType.JSON)
+                .body(user)
+                .when().post("/users")
+                .then().extract().response();
+
+
+        List<Map<String, String>> erros =  response.jsonPath().getList("fieldErrors");
+
+
+        Assertions.assertEquals(422, response.getStatusCode());
+        Assertions.assertEquals("Validation Error", response.jsonPath().getString("message"));
+
+        Assertions.assertNotNull(erros);
+        Assertions.assertNotEquals(0, erros.size());
     }
 }
