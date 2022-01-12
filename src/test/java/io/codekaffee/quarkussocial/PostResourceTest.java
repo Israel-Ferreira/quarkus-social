@@ -16,6 +16,7 @@ import static io.restassured.RestAssured.given;
 
 
 @QuarkusTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestHTTPEndpoint(PostResource.class)
 class PostResourceTest {
 
@@ -39,6 +40,7 @@ class PostResourceTest {
 
 
     @Test
+    @Order(1)
     @DisplayName("Deve criar um post com usuário")
     void createPost() {
 
@@ -57,6 +59,7 @@ class PostResourceTest {
 
 
     @Test
+    @Order(4)
     @DisplayName("Não deve criar um post com o texto em branco")
     void shouldNotCreatePostWithContentBlank() {
         var postRequest = new PostRequest();
@@ -75,6 +78,7 @@ class PostResourceTest {
 
 
     @Test
+    @Order(3)
     @DisplayName("Não deve criar o post, se o body enviado for nulo")
     void shouldNotCreatePostWhenBodyIsNull() {
 
@@ -89,7 +93,15 @@ class PostResourceTest {
     }
 
 
+//    @Test
+//    @DisplayName("Deve Listar os posts do usuário para o seguidor do mesmo")
+//    void shouldListUserPostsWhenFollowerFollowsUser(){
+//
+//    }
+
+
     @Test
+    @Order(2)
     @DisplayName("Não deve criar o post de um usuário inexistente na base de dados")
     void shouldNotCreatePostWhenUserIsNotFound() {
 
@@ -110,18 +122,33 @@ class PostResourceTest {
 
 
 
-    @Test
-    @DisplayName("")
-    void  shouldListUserPostsWhenFollowerIdUserFollows() {
 
+
+    @Test
+    @Order(6)
+    @DisplayName("Não deve listar os posts, se o id do seguidor (FollowerId) não estiver no Banco")
+    void  shouldNotListUserPostsWhenFollowerIdOfUserNotExistsInDb() {
+        Integer userId = 1;
+
+        Integer followerId = 1260;
+
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("userId", userId)
+                .header("followerId", followerId)
+                .when().get()
+                .then().statusCode(404)
+                .body("message", Matchers.is("Follower not found"));
     }
 
 
 
     @Test
+    @Order(5)
     @DisplayName("Não deve listar os posts, se não existir o id do usuário na base de dados")
     void shouldNotListPostsWhenUserIsNotFound() {
-        Integer userId = 4;
+        Integer userId = 7;
         Integer followerId = 5;
 
         given()
@@ -135,6 +162,7 @@ class PostResourceTest {
 
 
     @Test
+    @Order(7)
     @DisplayName("Não deve listar posts, se o followerId for nulo")
     void shouldntListUserPostsWhenFollowerIdIsNull() {
 
