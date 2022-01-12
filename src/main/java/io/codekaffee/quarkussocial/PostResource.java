@@ -23,6 +23,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +47,12 @@ public class PostResource {
     @Operation(summary= "Criar post de um usuário especifico")
     @RequestBodySchema(PostRequest.class)
     public Response createPost(@PathParam("userId") Long userId, PostRequest postRequest){
+
+
+        if(postRequest == null) {
+            ResponseError responseError = new ResponseError("O body não deve estar nulo ou vazio", new HashSet<>());
+            return responseError.withStatusCode(Status.BAD_REQUEST.getStatusCode());
+        }
 
         var violations = validator.validate(postRequest);
 

@@ -1,22 +1,21 @@
 package io.codekaffee.quarkussocial;
 
-import static io.restassured.RestAssured.given;
-
-import javax.ws.rs.core.Response.Status;
-
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.*;
-
 import io.codekaffee.quarkussocial.dto.CreateUserRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.*;
 
+import javax.ws.rs.core.Response.Status;
 import java.util.List;
 import java.util.Map;
+
+import static io.restassured.RestAssured.given;
 
 @QuarkusTest
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class UserResourceTest {
+
 
     @Test
     @Order(1)
