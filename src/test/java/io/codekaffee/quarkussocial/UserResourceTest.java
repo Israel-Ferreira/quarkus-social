@@ -4,9 +4,8 @@ import static io.restassured.RestAssured.given;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.*;
 
 import io.codekaffee.quarkussocial.dto.CreateUserRequest;
 import io.quarkus.test.junit.QuarkusTest;
@@ -16,9 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 @QuarkusTest
+@TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class UserResourceTest {
 
     @Test
+    @Order(1)
     @DisplayName("Deve criar um usuário com sucesso")
     void shouldCreateUserWhenIsBodyValid() {
         var user = new CreateUserRequest("Matheus Faria", 24);
@@ -38,9 +39,8 @@ class UserResourceTest {
 
 
 
-
-
     @Test
+    @Order(2)
     @DisplayName("Não deve criar o usuário, se o nome do usuário estiver em branco")
     void shouldntCreateUserWhenNameIsBlank() {
         var user = new CreateUserRequest("", 24);
@@ -58,6 +58,7 @@ class UserResourceTest {
 
 
     @Test
+    @Order(3)
     @DisplayName("Não deve criar um usuário, se o nome do usuário estiver nulo")
     void shouldNotCreateUserWithNullValue() {
         var user =  new CreateUserRequest(null, 24);
@@ -94,4 +95,23 @@ class UserResourceTest {
         Assertions.assertNotNull(erros);
         Assertions.assertNotEquals(0, erros.size());
     }
+
+
+
+    @Test
+    @Order(4)
+    @DisplayName("Deve retornar uma lista de usuarios")
+    void shouldReturnAListOfUsers() {
+
+        given().contentType(ContentType.JSON)
+                .when().get("/users")
+                .then()
+                .statusCode(200)
+                .body("size()", Matchers.is(1));
+
+
+
+    }
+
+
 }
