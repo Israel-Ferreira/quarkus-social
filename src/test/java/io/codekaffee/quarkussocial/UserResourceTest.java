@@ -1,11 +1,14 @@
 package io.codekaffee.quarkussocial;
 
 import io.codekaffee.quarkussocial.dto.CreateUserRequest;
+import io.codekaffee.quarkussocial.repositories.UserRepository;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +19,17 @@ import static io.restassured.RestAssured.given;
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 class UserResourceTest {
 
+    @Inject
+    UserRepository userRepository;
+
+
+
 
     @Test
     @Order(1)
     @DisplayName("Deve criar um usuário com sucesso")
     void shouldCreateUserWhenIsBodyValid() {
+
         var user = new CreateUserRequest("Matheus Faria", 24);
 
         var response = given()
@@ -105,8 +114,7 @@ class UserResourceTest {
         given().contentType(ContentType.JSON)
                 .when().get("/users")
                 .then()
-                .statusCode(200)
-                .body("size()", Matchers.is(1));
+                .statusCode(200);
 
 
 

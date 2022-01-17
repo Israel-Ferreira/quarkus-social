@@ -183,7 +183,7 @@ class PostResourceTest {
     @DisplayName("Não deve listar os posts, se o usuário não estiver seguindo o usuário dono dos posts")
     void shouldNotListPostsWhenFollowerIsNotFollowsUser() {
         Integer userId = 1;
-        Integer followerId = 2;
+        Integer followerId = user2.getId().intValue();
 
 
         given().contentType(ContentType.JSON)
