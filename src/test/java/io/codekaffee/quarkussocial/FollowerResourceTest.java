@@ -120,6 +120,8 @@ class FollowerResourceTest {
 
 
 
+
+
     @Test
     @DisplayName("Deve retornar uma lista de seguidores")
     void shouldListUserFollowers() {
@@ -148,6 +150,49 @@ class FollowerResourceTest {
                 .when().put()
                 .then().statusCode(Response.Status.CONFLICT.getStatusCode());
 
+    }
+
+
+
+    @Test
+    @DisplayName("Deve não fazer o unfollow do usuário, se o usuário não estiver na base")
+    void tryUnfollowInexistentser() {
+        var inexistentFollowerId =  999L;
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("userId", user1.getId())
+                .queryParam("followerId", inexistentFollowerId)
+                .when().delete()
+                .then().statusCode(Response.Status.NOT_FOUND.getStatusCode());
+
+    }
+
+
+
+
+    @Test
+    @DisplayName("Deve retornar 409, caso o userId for igual ao followerId")
+    void dontUnfollowUserWithSameIdOfFollowerId() {
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("userId", user1.getId())
+                .queryParam("followerId", user1.getId())
+                .when().delete()
+                .then().statusCode(Response.Status.CONFLICT.getStatusCode());
+    }
+
+
+
+    @Test
+    @DisplayName("Deve retornar 409, se o usuário não segue o user id informado")
+    void unfollowUserNotWork() {
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("userId", user1.getId())
+                .queryParam("followerId", user2.getId())
+                .when().delete()
+                .then().statusCode(Response.Status.CONFLICT.getStatusCode());
     }
 
 

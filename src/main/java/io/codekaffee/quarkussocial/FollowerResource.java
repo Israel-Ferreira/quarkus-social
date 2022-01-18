@@ -5,6 +5,7 @@ import io.codekaffee.quarkussocial.dto.FollowerResponse;
 import io.codekaffee.quarkussocial.dto.ResponseError;
 import io.codekaffee.quarkussocial.dto.UserFollowersDTO;
 import io.codekaffee.quarkussocial.exceptions.FollowerIdIsEqualToUserException;
+import io.codekaffee.quarkussocial.exceptions.UserConflictException;
 import io.codekaffee.quarkussocial.exceptions.UserNotFoundException;
 import io.codekaffee.quarkussocial.models.Follower;
 import io.codekaffee.quarkussocial.services.FollowerService;
@@ -61,7 +62,16 @@ public class FollowerResource {
     }
 
     @DELETE
-    public Response unfollowUser(@PathParam("userId") Long userId){
-        return Response.ok().build();
+    public Response unfollowUser(@PathParam("userId") Long userId, @QueryParam("followerId") Long followerId){
+        try {
+            followerService.unfollowUser(userId, followerId);
+            return Response.ok().build();
+        }catch (UserNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        }catch (UserConflictException e) {
+            return Response.status(Response.Status.CONFLICT).entity(e.getMessage()).build();
+        }catch (RuntimeException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

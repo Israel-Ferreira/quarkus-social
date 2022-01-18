@@ -59,17 +59,22 @@ public class FollowerService {
 
     @Transactional
     public void unfollowUser(Long userId, Long followerId) {
+
+        if(userId.equals(followerId)) {
+            throw new UserConflictException();
+        }
+
         Optional<User> user = userRepository.findByIdOptional(userId);
 
         if(user.isEmpty()) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("Usuário não encontrado");
         }
 
 
         Optional<User> follower = userRepository.findByIdOptional(followerId);
 
         if(follower.isEmpty()) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("seguidor não encontrado");
         }
 
         var follows = followerRepository.follows(user.get(), follower.get());
