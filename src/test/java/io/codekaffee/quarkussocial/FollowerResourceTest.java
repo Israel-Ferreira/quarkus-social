@@ -1,11 +1,14 @@
 package io.codekaffee.quarkussocial;
 
 import io.codekaffee.quarkussocial.dto.FollowerDTO;
+import io.codekaffee.quarkussocial.models.Follower;
 import io.codekaffee.quarkussocial.models.User;
+import io.codekaffee.quarkussocial.repositories.FollowerRepository;
 import io.codekaffee.quarkussocial.repositories.UserRepository;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,9 @@ class FollowerResourceTest {
     @Inject
     UserRepository userRepository;
 
+    @Inject
+    private FollowerRepository followerRepository;
+
     User user1, user2;
 
 
@@ -41,10 +47,22 @@ class FollowerResourceTest {
         u2.setAge(33);
         u2.setName("Example2");
 
-        this.userRepository.persist(u1, u2);
+        var u3 =  new User();
+        u3.setAge(44);
+        u3.setName("Example3");
+
+
+        this.userRepository.persist(u1, u2, u3);
 
         this.user1 = u1;
         this.user2 = u2;
+
+
+        Follower follower = new Follower();
+        follower.setFollower(u3);
+        follower.setUser(u1);
+
+        followerRepository.persist(follower);
     }
 
 
@@ -103,6 +121,20 @@ class FollowerResourceTest {
 
 
     @Test
+    @DisplayName("Deve retornar uma lista de seguidores")
+    void shouldListUserFollowers() {
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("userId", user1.getId())
+                .when().get()
+                .then().statusCode(Response.Status.OK.getStatusCode())
+                .body("followerCount", Matchers.greaterThan(0))
+                .body("followers", Matchers.hasSize(Matchers.greaterThan(0)));
+    }
+
+
+    @Test
     @DisplayName("Deve devolver o status 409, caso o follower id seja igual ao id do usuario")
     void followerIdIsEqualToUserId() {
 
@@ -116,6 +148,22 @@ class FollowerResourceTest {
                 .when().put()
                 .then().statusCode(Response.Status.CONFLICT.getStatusCode());
 
+    }
+
+
+
+
+    @Test
+    @DisplayName("Deve retornar 404, se o usuário não estiver na Base")
+    void dontShowFollowersWhenUserNotFoundInDb() {
+
+        Long inexistentUserId = 9090L;
+
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("userId",  inexistentUserId)
+                .when().get()
+                .then().statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 
 

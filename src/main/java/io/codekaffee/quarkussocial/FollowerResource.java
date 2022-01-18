@@ -30,15 +30,19 @@ public class FollowerResource {
 
     @GET
     public Response getFollowers(@PathParam("userId") Long  userId){
-        var followers = followerService.getUserFollowers(userId)
-                .stream().map(FollowerResponse::new)
-                .collect(Collectors.toList());
+        try {
+            var followers = followerService.getUserFollowers(userId)
+                    .stream().map(FollowerResponse::new)
+                    .collect(Collectors.toList());
 
-        UserFollowersDTO ufsd = new UserFollowersDTO();
-        ufsd.setFollowerCount((long) followers.size());
-        ufsd.setFollowers(followers);
+            UserFollowersDTO ufsd = new UserFollowersDTO();
+            ufsd.setFollowerCount((long) followers.size());
+            ufsd.setFollowers(followers);
 
-        return Response.ok().entity(ufsd).build();
+            return Response.ok().entity(ufsd).build();
+        }catch (UserNotFoundException userNotFoundException) {
+            return  Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 
     @PUT

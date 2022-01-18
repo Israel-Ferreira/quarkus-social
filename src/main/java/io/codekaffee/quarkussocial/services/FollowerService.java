@@ -29,7 +29,15 @@ public class FollowerService {
     }
 
     public List<Follower> getUserFollowers(Long userId){
-        User user = this.searchUser(userId);
+        Optional<User> userOpt = this.userRepository.findByIdOptional(userId);
+
+        if(userOpt.isEmpty()) {
+            throw  new UserNotFoundException();
+        }
+
+
+        var user = userOpt.get();
+
         return followerRepository.find("user", user).list();
     }
 
