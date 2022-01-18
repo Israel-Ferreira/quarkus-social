@@ -30,7 +30,7 @@ class FollowerResourceTest {
     @Inject
     private FollowerRepository followerRepository;
 
-    User user1, user2;
+    User user1, user2, user3;
 
 
 
@@ -52,11 +52,13 @@ class FollowerResourceTest {
         u3.setName("Example3");
 
 
+
+
         this.userRepository.persist(u1, u2, u3);
 
         this.user1 = u1;
         this.user2 = u2;
-
+        this.user3 = u3;
 
         Follower follower = new Follower();
         follower.setFollower(u3);
@@ -180,6 +182,19 @@ class FollowerResourceTest {
                 .queryParam("followerId", user1.getId())
                 .when().delete()
                 .then().statusCode(Response.Status.CONFLICT.getStatusCode());
+    }
+
+
+
+    @Test
+    @DisplayName("Deve retornar 200, caso o unfollow funcione")
+    void doUnfollowUser() {
+        given()
+                .contentType(ContentType.JSON)
+                .pathParam("userId", user1.getId())
+                .queryParam("followerId", user3.getId())
+                .when().delete()
+                .then().statusCode(Response.Status.OK.getStatusCode());
     }
 
 

@@ -8,7 +8,6 @@ import io.codekaffee.quarkussocial.models.Follower;
 import io.codekaffee.quarkussocial.models.User;
 import io.codekaffee.quarkussocial.repositories.FollowerRepository;
 import io.codekaffee.quarkussocial.repositories.UserRepository;
-import io.quarkus.panache.common.Parameters;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
